@@ -262,6 +262,20 @@
     .section-inner { padding: 2rem 1.25rem; }
     .hero { padding: 3rem 1.25rem 2.5rem; }
   }
+
+/* overview redesign */
+.key-finding{margin:1.6rem 0 0;padding:1.1rem 1.3rem;border-left:3px solid var(--accent);background:var(--accent-light);max-width:720px}
+.key-finding-num{font-family:Georgia,'Times New Roman',serif;font-size:40px;line-height:1;color:var(--accent);letter-spacing:-0.5px}
+.key-finding-num small{font-size:18px;color:var(--ink-muted);margin:0 10px}
+.key-finding-label{font-size:13.5px;color:var(--ink-light);margin-top:8px;line-height:1.6}
+.finding-cards{display:grid;grid-template-columns:repeat(3,1fr);gap:1rem;margin-bottom:1.6rem}
+@media(max-width:800px){.finding-cards{grid-template-columns:1fr}}
+.finding-card{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:1.1rem 1.2rem}
+.finding-card .fc-k{font-size:11px;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-muted);margin-bottom:6px}
+.finding-card .fc-h{font-family:Georgia,'Times New Roman',serif;font-size:17px;color:var(--ink);margin-bottom:6px;line-height:1.35}
+.finding-card .fc-p{font-size:13px;color:var(--ink-light);line-height:1.65}
+.takeaway{font-size:13px;color:var(--ink);background:#f6f2ea;border-radius:4px;padding:7px 10px;margin:0 0 .9rem;line-height:1.55}
+.takeaway b{color:var(--accent);font-weight:600}
 </style>
 </head>
 <body>
@@ -283,6 +297,10 @@
     <p class="hero-kicker">Scientometric Analysis · 2015–2025 · Data updated November 2026</p>
     <h1>A Decade of <em>Corporate Law Scholarship</em> in Law Reviews</h1>
     <p class="hero-lead">An empirical mapping of the evolution and scholarly trends of corporate law scholarship published between 2015 and 2025.</p>
+    <div class="key-finding">
+      <div class="key-finding-num">35%<small>→</small>52%</div>
+      <div class="key-finding-label">Share of corporate law articles that examine the corporation’s relationship to society (“corporate-society” scholarship), average of yearly shares, 2015–2020 vs. 2021–2025. Corporate-society articles first outnumbered firm-focused articles in 2022.</div>
+    </div>
     <div class="hero-stats">
       <div><div class="hero-stat-num">2,618</div><div class="hero-stat-label">Total Articles</div></div>
       <div><div class="hero-stat-num">369</div><div class="hero-stat-label">Law Journals</div></div>
@@ -292,34 +310,85 @@
   </div>
 
   <div class="section-inner">
-    <div class="metric-row" style="grid-template-columns: repeat(2,1fr);">
-      <div class="metric-card">
-        <div class="metric-card-label">Most frequent topic</div>
-        <div class="metric-card-value" style="font-size:18px; padding-top:4px">Corporate Governance</div>
-        <div class="metric-card-sub">1,275 mentions across the corpus</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-card-label">Fastest growing topic</div>
-        <div class="metric-card-value" style="font-size:18px; padding-top:4px">Climate / Sustainability</div>
-        <div class="metric-card-sub">+6.8 pp share of articles, 2015–2020 → 2021–2025</div>
-      </div>
+    <div class="finding-cards">
+      <div class="finding-card"><div class="fc-k">1 · The shift</div><div class="fc-h">From roughly a third to rough parity</div><div class="fc-p">Corporate-society articles averaged 35.1% of the field in 2015–2020 and 52.4% in 2021–2025. The two bodies of scholarship converged in 2021; corporate-society articles exceeded firm-focused articles for the first time in 2022 and the two have stayed near parity since.</div></div>
+      <div class="finding-card"><div class="fc-k">2 · Where it happened</div><div class="fc-h">Growth runs through the field’s core subjects</div><div class="fc-p">The largest increases in corporate-society articles per year came in Corporate Governance (+26 a year), Climate / Sustainability (+16), Government Intervention / Regulation (+10) and Corporate Purpose (+8). Corporate Governance remains the most frequent topic overall (1,275 articles).</div></div>
+      <div class="finding-card"><div class="fc-k">3 · Tone</div><div class="fc-h">Affirming throughout, with more skeptical work after 2021</div><div class="fc-p">95.8% of corporate-society articles take an affirming stance toward corporate engagement with society. Skeptical articles rose from 13 in 2015–2020 to 33 in 2021–2025, so the field’s turn is not confined to scholars who endorse it.</div></div>
     </div>
 
-    <div class="chart-block">
-      <div class="chart-block-title">Topic composition over time</div>
-      <div class="chart-block-sub">Share of articles per year tagged with each of the top 10 topics. Because articles carry up to two topic tags, stacked shares sum to more than 100%. All 34 topics appear in the prevalence chart below. N = 2,618.</div>
+<div class="chart-block">
+      <div class="chart-block-title">Corporate-society vs. firm-focused scholarship by year</div>
+      <div class="chart-block-sub">Each year’s articles split into corporate-society (green) and firm-focused (brown). The line is the corporate-society share; the dotted line marks 50%; the dashed segments are the 2015–2020 and 2021–2025 averages. Hover for counts. N = 2,618.</div>
+      <div class="takeaway"><b>What this shows:</b> firm-focused work outnumbered corporate-society work by roughly two to one through 2020; the gap closed in 2021 and has not reopened.</div>
+      <div class="tab-row" id="shiftTabs">
+        <button class="tab-btn active" data-shift="share">Share of articles (%)</button>
+        <button class="tab-btn" data-shift="count">Article counts</button>
+      </div>
+      <div class="chart-wrap" style="height:340px"><canvas id="shiftChart" role="img" aria-label="Corporate-society share of corporate law articles by year, 2015 to 2025"></canvas></div>
+    </div>
+
+        <div class="chart-block">
+      <div class="chart-block-title">How the topic mix changed</div>
+      <div class="chart-block-sub">Default view: each topic’s share of all articles in 2021–2025 minus its share in 2015–2020, in percentage points (topics with at least 40 articles; articles carry up to two topic tags). The other tabs show the ten largest topics year by year.</div>
+      <div class="takeaway"><b>What this shows:</b> Climate / Sustainability (+6.8 pp) and Stakeholder Interests (+2.8 pp) gained the most ground; Rights of Corporations (-4.0 pp) and Judicial Oversight (-3.1 pp) lost the most.</div>
       <div class="tab-row" id="ovTabs">
-        <button class="tab-btn active" data-ov="stacked">Stacked area</button>
+        <button class="tab-btn active" data-ov="change">Change in share, 2015–20 → 2021–25</button>
         <button class="tab-btn" data-ov="line">Line (% share)</button>
         <button class="tab-btn" data-ov="bar">Raw counts</button>
       </div>
       <div class="legend-row" id="ovLegend"></div>
-      <div class="chart-wrap" style="height:320px"><canvas id="ovChart" role="img" aria-label="Topic composition over time 2015 to 2025"></canvas></div>
+      <div class="chart-wrap" id="ovWrap" style="height:640px"><canvas id="ovChart" role="img" aria-label="Topic composition over time 2015 to 2025"></canvas></div>
     </div>
 
     <div class="chart-block">
+      <div class="chart-block-title">Explore a topic</div>
+      <div class="chart-block-sub">Pick any of the 34 topics (article counts in parentheses) to see what share of corporate-society articles and what share of firm-focused articles carried that topic each year.</div>
+      <div class="takeaway"><b>How to read it:</b> when the green line sits far above the brown one, the topic is written about mainly through a corporate-society lens; when the two run together, scholars approach it from both directions.</div>
+      <select class="ctrl-select" id="topicSelect" style="margin-bottom:1rem">
+        <option value="Corporate Governance">Corporate Governance (1275)</option>
+        <option value="Government Intervention / Regulation">Government Intervention / Regulation (475)</option>
+        <option value="Fiduciary Duties">Fiduciary Duties (286)</option>
+        <option value="Corporate Purpose">Corporate Purpose (238)</option>
+        <option value="Judicial Oversight">Judicial Oversight (232)</option>
+        <option value="Securities Law / Litigation">Securities Law / Litigation (180)</option>
+        <option value="Accounting / Compliance">Accounting / Compliance (174)</option>
+        <option value="CSR">CSR (159)</option>
+        <option value="Corporate Bankruptcy & Restructuring">Corporate Bankruptcy & Restructuring (155)</option>
+        <option value="Climate / Sustainability" selected>Climate / Sustainability (145)</option>
+        <option value="Investors / Shareholders">Investors / Shareholders (132)</option>
+        <option value="Competition & Market Power">Competition & Market Power (122)</option>
+        <option value="Rights of Corporations">Rights of Corporations (114)</option>
+        <option value="Shareholder Activism">Shareholder Activism (103)</option>
+        <option value="Banking / Financial Regulation">Banking / Financial Regulation (101)</option>
+        <option value="Stakeholder Interests">Stakeholder Interests (100)</option>
+        <option value="Contracts / Agreements">Contracts / Agreements (93)</option>
+        <option value="Social Enterprise / Benefit Corp.">Social Enterprise / Benefit Corp. (92)</option>
+        <option value="DEI">DEI (83)</option>
+        <option value="Mergers & Acquisitions">Mergers & Acquisitions (72)</option>
+        <option value="Global Perspective">Global Perspective (70)</option>
+        <option value="Voting">Voting (65)</option>
+        <option value="State Courts & Statutes">State Courts & Statutes (64)</option>
+        <option value="Crypto / AI">Crypto / AI (46)</option>
+        <option value="LLCs">LLCs (42)</option>
+        <option value="Tax">Tax (38)</option>
+        <option value="Startups">Startups (26)</option>
+        <option value="Nonprofits">Nonprofits (22)</option>
+        <option value="Supply / Value Chains">Supply / Value Chains (20)</option>
+        <option value="Insurance / Risk">Insurance / Risk (11)</option>
+        <option value="Politics">Politics (11)</option>
+        <option value="Public Good">Public Good (9)</option>
+        <option value="Business Associations">Business Associations (8)</option>
+        <option value="Social Issues">Social Issues (7)</option>
+      </select>
+      <div style="display:flex; gap:12px; margin-bottom:12px; font-size:11px; color:var(--ink-muted)">
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;background:var(--green);display:inline-block"></span>Corporate-society %</span>
+        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;background:var(--accent);display:inline-block;border-top:2px dashed var(--accent)"></span>Firm-focused %</span>
+      </div>
+      <div class="chart-wrap" style="height:260px"><canvas id="trendChart" role="img" aria-label="Corporate-society vs firm-focused topic trend over time"></canvas></div>
+    </div>
+    <div class="chart-block">
       <div class="chart-block-title">Topic prevalence across the full corpus</div>
-      <div class="chart-block-sub">Topics ranked by total number of articles tagged, from most to least prevalent. Each article may carry up to two topic tags.</div>
+      <div class="chart-block-sub">All 34 topics ranked by total number of articles tagged, 2015–2025. Each article may carry up to two topic tags.</div>
       <div class="chart-wrap" style="height:780px"><canvas id="topicPrevChart" role="img" aria-label="Topic prevalence ranked from most to least frequent"></canvas></div>
     </div>
   </div>
@@ -348,6 +417,7 @@
     <div class="chart-block">
       <div class="chart-block-title">Topic prevalence divergence</div>
       <div class="chart-block-sub">Each bar shows % of articles in that group tagged with this topic (topics with at least 40 articles). Corporate-society extends left (green), firm-focused extends right (brown).</div>
+      <div class="takeaway"><b>What this shows:</b> corporate purpose, CSR and climate are almost exclusively corporate-society topics; corporate governance, fiduciary duties and judicial oversight are where firm-focused scholarship concentrates, but corporate governance is also the single largest corporate-society topic.</div>
       <div style="display:flex; gap:12px; margin-bottom:1rem; font-size:11px; color:var(--ink-muted)">
         <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--green);border-radius:2px"></span>Corporate-society (← left)</span>
         <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:10px;background:var(--accent);border-radius:2px"></span>Firm-focused (→ right)</span>
@@ -355,28 +425,6 @@
       <div id="divergeChart"></div>
     </div>
 
-    <div class="chart-block">
-      <div class="chart-block-title">Topic trajectory over time — Corporate-Society vs. Firm-Focused</div>
-      <div class="chart-block-sub">Select a topic to compare how its prevalence evolved within each group.</div>
-      <select class="ctrl-select" id="topicSelect" style="margin-bottom:1rem">
-        <option value="Climate / Sustainability" selected>Climate / Sustainability</option>
-        <option value="Corporate Governance">Corporate Governance</option>
-        <option value="Government Intervention / Regulation">Gov't Intervention / Regulation</option>
-        <option value="Corporate Purpose">Corporate Purpose</option>
-        <option value="CSR">CSR</option>
-        <option value="Fiduciary Duties">Fiduciary Duties</option>
-        <option value="Judicial Oversight">Judicial Oversight</option>
-        <option value="Stakeholder Interests">Stakeholder Interests</option>
-        <option value="DEI">DEI</option>
-        <option value="Social Enterprise / Benefit Corporation">Social Enterprise / Benefit Corp.</option>
-        <option value="Securities Law / Litigation">Securities Law / Litigation</option>
-      </select>
-      <div style="display:flex; gap:12px; margin-bottom:12px; font-size:11px; color:var(--ink-muted)">
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;background:var(--green);display:inline-block"></span>Corporate-society %</span>
-        <span style="display:flex;align-items:center;gap:5px"><span style="width:10px;height:3px;background:var(--accent);display:inline-block;border-top:2px dashed var(--accent)"></span>Firm-focused %</span>
-      </div>
-      <div class="chart-wrap" style="height:260px"><canvas id="trendChart" role="img" aria-label="Corporate-society vs firm-focused topic trend over time"></canvas></div>
-    </div>
   </div>
 </section>
 
@@ -496,7 +544,9 @@
 // ══════════════════════════════════
 const YEARS = [2015,2016,2017,2018,2019,2020,2021,2022,2023,2024,2025];
 const TOTALS = [240,222,203,237,256,254,260,234,240,239,233];
-const BLS_N  = [78,70,91,77,100,76,126,131,126,132,116];
+const BLS_N  = [78, 70, 91, 77, 100, 76, 126, 131, 126, 132, 116];
+const SHARE_PRE = 35.1, SHARE_POST = 52.4;
+const CHANGE_DATA = [{"t": "Climate / Sustainability", "pre": 2.4, "post": 9.2, "d": 6.8, "n": 145}, {"t": "Stakeholder Interests", "pre": 2.5, "post": 5.3, "d": 2.8, "n": 100}, {"t": "Corporate Purpose", "pre": 8.0, "post": 10.4, "d": 2.4, "n": 238}, {"t": "Government Intervention / Regulation", "pre": 17.2, "post": 19.2, "d": 2.0, "n": 475}, {"t": "DEI", "pre": 2.3, "post": 4.2, "d": 1.9, "n": 83}, {"t": "Securities Law / Litigation", "pre": 6.1, "post": 7.8, "d": 1.7, "n": 180}, {"t": "Contracts / Agreements", "pre": 3.0, "post": 4.2, "d": 1.2, "n": 93}, {"t": "Crypto / AI", "pre": 1.2, "post": 2.4, "d": 1.2, "n": 46}, {"t": "Competition & Market Power", "pre": 4.5, "post": 4.9, "d": 0.4, "n": 122}, {"t": "Corporate Governance", "pre": 48.7, "post": 48.8, "d": 0.1, "n": 1275}, {"t": "Shareholder Activism", "pre": 3.9, "post": 4.0, "d": 0.1, "n": 103}, {"t": "State Courts & Statutes", "pre": 2.4, "post": 2.5, "d": 0.1, "n": 64}, {"t": "Corporate Bankruptcy & Restructuring", "pre": 5.9, "post": 5.9, "d": 0.0, "n": 155}, {"t": "LLCs", "pre": 1.6, "post": 1.6, "d": 0.0, "n": 42}, {"t": "Fiduciary Duties", "pre": 11.0, "post": 10.8, "d": -0.2, "n": 286}, {"t": "Banking / Financial Regulation", "pre": 4.1, "post": 3.6, "d": -0.5, "n": 101}, {"t": "Mergers & Acquisitions", "pre": 3.0, "post": 2.4, "d": -0.6, "n": 72}, {"t": "CSR", "pre": 6.4, "post": 5.6, "d": -0.8, "n": 159}, {"t": "Investors / Shareholders", "pre": 5.4, "post": 4.6, "d": -0.8, "n": 132}, {"t": "Accounting / Compliance", "pre": 7.2, "post": 6.1, "d": -1.1, "n": 174}, {"t": "Global Perspective", "pre": 3.3, "post": 2.0, "d": -1.3, "n": 70}, {"t": "Social Enterprise / Benefit Corp.", "pre": 4.2, "post": 2.7, "d": -1.5, "n": 92}, {"t": "Voting", "pre": 3.3, "post": 1.6, "d": -1.7, "n": 65}, {"t": "Judicial Oversight", "pre": 10.3, "post": 7.2, "d": -3.1, "n": 232}, {"t": "Rights of Corporations", "pre": 6.2, "post": 2.2, "d": -4.0, "n": 114}];
 
 const TOPIC_DATA = {
   "Corporate Governance": [113,106,104,102,126,136,116,111,113,123,125],
@@ -542,17 +592,40 @@ const DIVERGE_DATA = [
 ];
 
 const TREND_DATA = {
-  "Climate / Sustainability":{bls:[5.1,7.1,3.3,10.4,7.0,7.9,11.9,15.3,22.2,20.5,12.9],non:[0.0,0.0,0.0,0.0,0.6,0.0,0.0,1.0,2.6,0.9,0.9]},
-  "Corporate Governance":{bls:[35.9,35.7,34.1,31.2,35.0,46.1,34.1,49.6,42.1,48.5,46.6],non:[52.5,53.3,65.2,48.8,58.3,56.7,54.5,44.7,52.6,55.1,60.7]},
-  "Government Intervention / Regulation":{bls:[20.5,27.1,11.0,23.4,21.0,23.7,25.4,18.3,19.0,19.7,24.1],non:[13.6,19.1,13.4,16.3,15.4,14.0,16.4,19.4,20.2,15.9,13.7]},
-  "Corporate Purpose":{bls:[21.8,12.9,27.5,11.7,19.0,14.5,19.0,15.3,17.5,19.7,18.1],non:[3.7,2.6,1.8,1.9,1.3,3.4,3.0,2.9,0.9,1.9,1.7]},
-  "CSR":{bls:[17.9,14.3,24.2,23.4,17.0,13.2,9.5,10.7,11.1,11.4,9.5],non:[0.0,0.0,0.0,0.0,0.0,0.0,0.7,0.0,0.9,0.0,0.0]},
-  "Fiduciary Duties":{bls:[5.1,4.3,6.6,1.3,8.0,1.3,7.1,6.9,7.9,7.6,6.9],non:[16.0,13.2,22.3,13.1,10.9,13.5,8.2,10.7,14.0,15.9,24.8]},
-  "Judicial Oversight":{bls:[3.8,2.9,4.4,6.5,3.0,2.6,3.2,1.5,2.4,3.0,2.6],non:[13.6,17.1,15.2,15.0,12.8,9.6,11.9,19.4,9.6,14.0,7.7]},
-  "Stakeholder Interests":{bls:[5.1,8.6,3.3,3.9,2.0,11.8,8.7,8.4,6.3,13.6,6.9],non:[0.0,2.0,1.8,1.3,0.0,1.1,1.5,1.0,1.8,1.9,0.9]},
-  "DEI":{bls:[3.8,2.9,1.1,14.3,12.0,1.3,9.5,14.5,7.9,3.0,4.3],non:[0.6,0.0,0.0,0.0,0.0,0.6,0.0,1.0,0.0,0.0,0.0]},
-  "Social Enterprise / Benefit Corporation":{bls:[16.7,5.7,24.2,11.7,7.0,6.6,7.1,3.8,0.0,0.8,13.8],non:[0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.0,0.9,0.0]},
-  "Securities Law / Litigation":{bls:[0.0,2.9,0.0,2.6,2.0,2.6,4.0,4.6,4.8,3.0,5.2],non:[10.5,5.9,8.9,8.1,10.9,6.7,9.7,16.5,8.8,13.1,11.1]},
+  "Corporate Governance":{bls:[35.9, 35.7, 34.1, 31.2, 35.0, 46.1, 34.1, 49.6, 42.1, 48.5, 46.6],non:[52.5, 53.3, 65.2, 48.8, 58.3, 56.7, 54.5, 44.7, 52.6, 55.1, 60.7]},
+  "Government Intervention / Regulation":{bls:[20.5, 27.1, 11.0, 23.4, 21.0, 23.7, 25.4, 18.3, 19.0, 19.7, 24.1],non:[13.6, 19.1, 13.4, 16.3, 15.4, 14.0, 16.4, 19.4, 20.2, 15.9, 13.7]},
+  "Fiduciary Duties":{bls:[5.1, 4.3, 6.6, 1.3, 8.0, 1.3, 7.1, 6.9, 7.9, 7.6, 6.9],non:[16.0, 13.2, 22.3, 13.1, 10.9, 13.5, 8.2, 10.7, 14.0, 15.9, 24.8]},
+  "Corporate Purpose":{bls:[21.8, 12.9, 27.5, 11.7, 19.0, 14.5, 19.0, 15.3, 17.5, 19.7, 18.1],non:[3.7, 2.6, 1.8, 1.9, 1.3, 3.4, 3.0, 2.9, 0.9, 1.9, 1.7]},
+  "Judicial Oversight":{bls:[3.8, 2.9, 4.4, 6.5, 3.0, 2.6, 3.2, 1.5, 2.4, 3.0, 2.6],non:[13.6, 17.1, 15.2, 15.0, 12.8, 9.6, 11.9, 19.4, 9.6, 14.0, 7.7]},
+  "Securities Law / Litigation":{bls:[0.0, 2.9, 0.0, 2.6, 2.0, 2.6, 4.0, 4.6, 4.8, 3.0, 5.2],non:[10.5, 5.9, 8.9, 8.1, 10.9, 6.7, 9.7, 16.5, 8.8, 13.1, 11.1]},
+  "Accounting / Compliance":{bls:[5.1, 4.3, 4.4, 2.6, 6.0, 6.6, 6.3, 6.9, 4.8, 6.8, 0.9],non:[4.9, 6.6, 8.0, 10.0, 10.3, 10.1, 9.0, 4.9, 5.3, 9.3, 6.0]},
+  "CSR":{bls:[17.9, 14.3, 24.2, 23.4, 17.0, 13.2, 9.5, 10.7, 11.1, 11.4, 9.5],non:[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.7, 0.0, 0.9, 0.0, 0.0]},
+  "Corporate Bankruptcy & Restructuring":{bls:[1.3, 1.4, 2.2, 2.6, 0.0, 1.3, 0.8, 3.1, 1.6, 1.5, 0.9],non:[11.7, 5.3, 4.5, 13.8, 3.8, 9.6, 10.4, 13.6, 13.2, 9.3, 6.8]},
+  "Climate / Sustainability":{bls:[5.1, 7.1, 3.3, 10.4, 7.0, 7.9, 11.9, 15.3, 22.2, 20.5, 12.9],non:[0.0, 0.0, 0.0, 0.0, 0.6, 0.0, 0.0, 1.0, 2.6, 0.9, 0.9]},
+  "Investors / Shareholders":{bls:[2.6, 0.0, 0.0, 0.0, 2.0, 0.0, 3.2, 0.8, 2.4, 2.3, 3.4],non:[8.6, 7.2, 7.1, 10.6, 8.3, 5.1, 7.5, 9.7, 6.1, 6.5, 6.0]},
+  "Competition & Market Power":{bls:[0.0, 4.3, 1.1, 5.2, 1.0, 7.9, 4.8, 3.8, 5.6, 3.0, 6.0],non:[0.6, 2.6, 0.9, 10.0, 3.8, 11.2, 5.2, 3.9, 5.3, 6.5, 5.1]},
+  "Rights of Corporations":{bls:[14.1, 20.0, 5.5, 7.8, 6.0, 5.3, 4.8, 1.5, 2.4, 2.3, 0.9],non:[8.6, 6.6, 0.9, 3.1, 6.4, 0.6, 3.7, 1.9, 0.9, 3.7, 0.0]},
+  "Shareholder Activism":{bls:[2.6, 1.4, 2.2, 0.0, 10.0, 1.3, 5.6, 3.1, 2.4, 0.0, 3.4],non:[2.5, 6.6, 4.5, 2.5, 9.0, 1.1, 5.2, 4.9, 2.6, 3.7, 9.4]},
+  "Banking / Financial Regulation":{bls:[5.1, 2.9, 1.1, 1.3, 1.0, 1.3, 4.0, 1.5, 4.0, 1.5, 2.6],non:[9.3, 6.6, 7.1, 3.8, 3.2, 2.2, 4.5, 5.8, 5.3, 2.8, 4.3]},
+  "Stakeholder Interests":{bls:[5.1, 8.6, 3.3, 3.9, 2.0, 11.8, 8.7, 8.4, 6.3, 13.6, 6.9],non:[0.0, 2.0, 1.8, 1.3, 0.0, 1.1, 1.5, 1.0, 1.8, 1.9, 0.9]},
+  "Contracts / Agreements":{bls:[0.0, 2.9, 3.3, 1.3, 5.0, 1.3, 1.6, 5.3, 4.0, 3.0, 0.0],non:[4.3, 4.6, 1.8, 1.3, 3.2, 3.9, 4.5, 2.9, 8.8, 6.5, 6.0]},
+  "Social Enterprise / Benefit Corp.":{bls:[16.7, 5.7, 24.2, 11.7, 7.0, 6.6, 7.1, 3.8, 0.0, 0.8, 13.8],non:[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9, 0.0]},
+  "DEI":{bls:[3.8, 2.9, 1.1, 14.3, 12.0, 1.3, 9.5, 14.5, 7.9, 3.0, 4.3],non:[0.6, 0.0, 0.0, 0.0, 0.0, 0.6, 0.0, 1.0, 0.0, 0.0, 0.0]},
+  "Mergers & Acquisitions":{bls:[1.3, 0.0, 0.0, 1.3, 0.0, 1.3, 0.0, 1.5, 0.8, 1.5, 0.9],non:[3.7, 4.6, 0.9, 4.4, 7.1, 4.5, 5.2, 2.9, 6.1, 1.9, 3.4]},
+  "Global Perspective":{bls:[3.8, 5.7, 4.4, 3.9, 1.0, 10.5, 1.6, 0.8, 0.0, 3.0, 1.7],non:[3.7, 0.0, 1.8, 3.1, 3.2, 2.8, 5.2, 1.9, 0.9, 4.7, 0.0]},
+  "Voting":{bls:[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.0, 0.0, 0.0, 0.8, 0.0],non:[0.6, 5.3, 6.3, 5.0, 6.4, 6.2, 3.7, 1.9, 4.4, 4.7, 0.9]},
+  "State Courts & Statutes":{bls:[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.4, 0.0, 0.8, 0.0, 0.0],non:[3.7, 7.2, 1.8, 3.8, 0.0, 5.1, 3.0, 3.9, 5.3, 0.9, 9.4]},
+  "Crypto / AI":{bls:[0.0, 0.0, 0.0, 1.3, 2.0, 1.3, 0.8, 0.0, 2.4, 1.5, 1.7],non:[0.0, 0.7, 0.0, 0.0, 5.1, 2.2, 6.0, 2.9, 2.6, 4.7, 1.7]},
+  "LLCs":{bls:[1.3, 0.0, 1.1, 1.3, 0.0, 0.0, 0.0, 0.8, 0.0, 0.0, 0.9],non:[2.5, 4.6, 1.8, 1.9, 0.0, 2.2, 3.7, 0.0, 5.3, 2.8, 2.6]},
+  "Tax":{bls:[1.3, 1.4, 1.1, 0.0, 3.0, 0.0, 0.0, 0.0, 3.2, 1.5, 1.7],non:[1.9, 0.7, 2.7, 1.9, 3.2, 1.1, 0.7, 1.0, 2.6, 1.9, 0.0]},
+  "Startups":{bls:[0.0, 0.0, 2.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 2.6],non:[1.2, 1.3, 1.8, 0.6, 1.3, 1.1, 0.0, 1.9, 2.6, 0.0, 4.3]},
+  "Nonprofits":{bls:[1.3, 1.4, 1.1, 0.0, 2.0, 0.0, 0.0, 0.8, 0.0, 0.8, 2.6],non:[1.9, 2.6, 0.9, 0.0, 0.6, 0.0, 0.7, 1.0, 0.9, 0.0, 0.0]},
+  "Supply / Value Chains":{bls:[0.0, 1.4, 0.0, 1.3, 3.0, 5.3, 1.6, 2.3, 1.6, 2.3, 0.9],non:[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]},
+  "Insurance / Risk":{bls:[0.0, 0.0, 1.1, 1.3, 0.0, 0.0, 0.0, 0.8, 0.0, 0.8, 0.0],non:[0.0, 0.0, 0.0, 0.0, 0.6, 1.1, 0.7, 1.0, 0.9, 0.9, 0.0]},
+  "Politics":{bls:[0.0, 1.4, 1.1, 1.3, 1.0, 1.3, 0.8, 1.5, 0.8, 0.0, 0.0],non:[0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9, 0.0, 0.0]},
+  "Public Good":{bls:[0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 2.4, 0.8, 0.8, 0.0, 1.7],non:[0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9, 0.0, 0.0]},
+  "Business Associations":{bls:[1.3, 0.0, 1.1, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.9],non:[1.2, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 0.9, 0.9]},
+  "Social Issues":{bls:[1.3, 0.0, 0.0, 1.3, 0.0, 1.3, 0.0, 0.8, 0.8, 0.0, 0.9],non:[0.0, 0.0, 0.0, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]},
 };
 
 const NET_NODES = [
@@ -668,6 +741,78 @@ document.querySelectorAll('footer [data-section]').forEach(el => {
   el.addEventListener('click', e => { e.preventDefault(); document.querySelector('.nav-links a[data-section="'+el.dataset.section+'"]').click(); });
 });
 
+
+// ══════════════════════════════════
+// SHIFT CHART (overview lead)
+// ══════════════════════════════════
+const valueLabels = {
+  id:'valueLabels',
+  afterDatasetsDraw(chart, args, opts) {
+    const {ctx} = chart; const specs = opts.specs||[];
+    ctx.save(); ctx.font = '600 11px Inter, system-ui, sans-serif'; ctx.textAlign='center';
+    specs.forEach(s => {
+      const meta = chart.getDatasetMeta(s.index); if (!meta || meta.hidden) return;
+      meta.data.forEach((el, i) => {
+        const v = chart.data.datasets[s.index].data[i]; if (v==null) return;
+        ctx.fillStyle = s.color || '#222';
+        const pos = el.tooltipPosition ? el.tooltipPosition() : el;
+        ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineJoin = 'round';
+        if (s.inside) { ctx.textBaseline='middle'; ctx.fillText(s.fmt(v), el.x, (el.y + el.base)/2); }
+        else { ctx.textBaseline='bottom'; ctx.strokeText(s.fmt(v), pos.x, pos.y - 7); ctx.fillText(s.fmt(v), pos.x, pos.y - 7); }
+      });
+    });
+    (opts.texts||[]).forEach(t => { ctx.fillStyle=t.color; ctx.textAlign=t.align||'left'; ctx.textBaseline='bottom';
+      const sc = chart.scales[t.scale||'y']; const x = chart.scales.x.getPixelForValue(t.x); ctx.font='500 10.5px Inter, system-ui, sans-serif';
+      ctx.lineWidth = 3; ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.strokeText(t.text, x + (t.dx||0), sc.getPixelForValue(t.y) - 4); ctx.fillText(t.text, x + (t.dx||0), sc.getPixelForValue(t.y) - 4); });
+    ctx.restore();
+  }
+};
+let shiftChart = null;
+function buildShift(mode) {
+  if (shiftChart) shiftChart.destroy();
+  const share = BLS_N.map((b,i)=>+(b/TOTALS[i]*100).toFixed(1));
+  const ffShare = share.map(s=>+(100-s).toFixed(1));
+  const pre = YEARS.map((y)=>y<=2020?SHARE_PRE:null), post = YEARS.map((y)=>y>=2021?SHARE_POST:null);
+  const isShare = mode==='share';
+  const ds = isShare ? [
+      {label:'Corporate-society share',data:share,backgroundColor:'#1a6e4a',borderWidth:0,stack:'s',order:3},
+      {label:'Firm-focused share',data:ffShare,backgroundColor:'#C0531D55',borderWidth:0,stack:'s',order:3},
+      {label:'50% reference',data:YEARS.map(()=>50),type:'line',yAxisID:'y2',borderColor:'#333',borderDash:[2,4],borderWidth:1.5,pointRadius:0,order:1},
+      {label:'2015–2020 average ('+SHARE_PRE+'%)',data:pre,type:'line',yAxisID:'y2',borderColor:'#555',borderDash:[7,5],borderWidth:2,pointRadius:0,order:1,spanGaps:false},
+      {label:'2021–2025 average ('+SHARE_POST+'%)',data:post,type:'line',yAxisID:'y2',borderColor:'#555',borderDash:[7,5],borderWidth:2,pointRadius:0,order:1,spanGaps:false},
+      {label:'Corporate-society share (line)',data:share,type:'line',yAxisID:'y2',borderColor:'#0b3d27',backgroundColor:'#fff',borderWidth:2.5,pointRadius:4.5,pointBorderWidth:2,pointBackgroundColor:'#fff',pointBorderColor:'#0b3d27',tension:0.25,order:0},
+    ] : [
+      {label:'Corporate-society articles',data:BLS_N,backgroundColor:'#1a6e4a',borderWidth:0,stack:'s'},
+      {label:'Firm-focused articles',data:TOTALS.map((t,i)=>t-BLS_N[i]),backgroundColor:'#C0531D55',borderWidth:0,stack:'s'},
+    ];
+  shiftChart = new Chart(document.getElementById('shiftChart').getContext('2d'), {
+    type:'bar', data:{labels:YEARS, datasets:ds},
+    plugins:[valueLabels],
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12,filter:(it)=>it.text!=='Corporate-society share (line)'}},
+        tooltip:{callbacks:{
+          title:(items)=>String(items[0].label),
+          label:(c)=>{const i=c.dataIndex; if(c.dataset.type==='line'&&c.dataset.label!=='Corporate-society share (line)') return null;
+            if(isShare){ if(c.dataset.label==='Corporate-society share') return null;
+              return c.dataset.label.startsWith('Firm') ? `Firm-focused: ${TOTALS[i]-BLS_N[i]} articles (${ffShare[i]}%)` : `Corporate-society: ${BLS_N[i]} of ${TOTALS[i]} articles (${share[i]}%)`; }
+            return `${c.dataset.label}: ${c.parsed.y}`; } } },
+        valueLabels: isShare
+          ? {specs:[{index:5,fmt:v=>v.toFixed(0)+'%',color:'#0b3d27'}]}
+          : {specs:[{index:0,fmt:v=>String(v),color:'#fff',inside:true},{index:1,fmt:v=>String(v),color:'#7a3a14',inside:true}]}
+      },
+      scales:{x:{stacked:true,ticks:{autoSkip:false,maxRotation:0,font:{size:11}},grid:{display:false}},
+              y:{stacked:true,max:isShare?100:undefined,ticks:{callback:v=>isShare?v+'%':v,font:{size:11}},grid:{color:'rgba(0,0,0,0.06)'}},
+              y2:{display:false,min:0,max:100}}
+    }
+  });
+}
+buildShift('share');
+document.getElementById('shiftTabs').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn'); if(!btn) return;
+  document.querySelectorAll('#shiftTabs .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); buildShift(btn.dataset.shift);
+});
+
 // ══════════════════════════════════
 // OVERVIEW CHARTS
 // ══════════════════════════════════
@@ -684,16 +829,20 @@ function buildOvChart(type) {
   if (ovChart) ovChart.destroy();
   const ctx = document.getElementById('ovChart').getContext('2d');
   let config;
-  if (type==='stacked') {
-    config = { type:'line', data:{ labels:YEARS, datasets: TOPICS.map((t,i)=>({
-      label:t, data:TOPIC_DATA[t].map((v,j)=>+(v/TOTALS[j]*100).toFixed(1)),
-      backgroundColor:PALETTE[i]+'BB', borderColor:PALETTE[i], borderWidth:0.5,
-      fill:true, tension:0.3, pointRadius:0
-    }))}, options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{stacked:true,ticks:{autoSkip:false,maxRotation:0,font:{size:11}},grid:{display:false}},
-              y:{stacked:true,ticks:{callback:v=>v+'%',font:{size:11}},grid:{color:'rgba(0,0,0,0.06)'}}}
-    }};
+  const wrap = document.getElementById('ovWrap');
+  ovLegendEl.style.display = type==='change' ? 'none' : '';
+  wrap.style.height = type==='change' ? (CHANGE_DATA.length*22+40)+'px' : '320px';
+  if (type==='change') {
+    config = { type:'bar', data:{ labels:CHANGE_DATA.map(d=>d.t), datasets:[{label:'Change in share (pp)',data:CHANGE_DATA.map(d=>d.d),
+      backgroundColor:CHANGE_DATA.map(d=>d.d>=0?'#1a6e4a':'#C0531D'),borderWidth:0}]},
+      plugins:[valueLabels],
+      options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+        plugins:{legend:{display:false},
+          tooltip:{callbacks:{label:c=>{const d=CHANGE_DATA[c.dataIndex];return [`2015–2020: ${d.pre}% of articles`,`2021–2025: ${d.post}% of articles`,`${d.n.toLocaleString()} articles in total`];}}},
+          valueLabels:{specs:[]}},
+        scales:{x:{ticks:{callback:v=>(v>0?'+':'')+v+' pp',font:{size:11}},grid:{color:'rgba(0,0,0,0.06)'}},
+                y:{ticks:{font:{size:10.5},autoSkip:false},grid:{display:false}}}
+      }};
   } else if (type==='line') {
     config = { type:'line', data:{ labels:YEARS, datasets: TOPICS.map((t,i)=>({
       label:t, data:TOPIC_DATA[t].map((v,j)=>+(v/TOTALS[j]*100).toFixed(1)),
@@ -715,7 +864,7 @@ function buildOvChart(type) {
   }
   ovChart = new Chart(ctx, config);
 }
-buildOvChart('stacked');
+buildOvChart('change');
 document.getElementById('ovTabs').addEventListener('click', e => {
   const btn = e.target.closest('.tab-btn'); if(!btn) return;
   document.querySelectorAll('#ovTabs .tab-btn').forEach(b=>b.classList.remove('active'));
@@ -782,7 +931,7 @@ document.getElementById('ovTabs').addEventListener('click', e => {
 // DIVERGE CHART
 // ══════════════════════════════════
 (function(){
-  const max = 60, half = 280;
+  const max = 70, half = 280;
   const html = DIVERGE_DATA.map(r => {
     const bw = Math.min(r.bls/max*half, half);
     const nw = Math.min(r.non/max*half, half);
@@ -1033,7 +1182,7 @@ function buildToneCharts() {
 // ══════════════════════════════════
 
 function downloadData() {
-  const data = { metadata:{ total_articles:2618, bls_articles:1123, years:"2015-2025", topics:34, data_version:"2026-11-02" }, tone_by_year: Object.fromEntries(YEARS.map((y,i)=>([y,{affirming:TONE_AFF[i],skeptical:TONE_SK[i]}]))), topic_frequencies: Object.fromEntries(NET_NODES.map(n=>[n.id,{frequency:n.freq,bls_share_pct:n.bls,cluster:n.cluster}])), year_totals: Object.fromEntries(YEARS.map((y,i)=>([y,{total:TOTALS[i],bls:BLS_N[i],non_bls:TOTALS[i]-BLS_N[i]}]))) };
+  const data = { metadata:{ total_articles:2618, bls_articles:1123, years:"2015-2025", topics:34, data_version:"2026-11-02" }, tone_by_year: Object.fromEntries(YEARS.map((y,i)=>([y,{affirming:TONE_AFF[i],skeptical:TONE_SK[i]}]))), topic_frequencies: Object.fromEntries(NET_NODES.map(n=>[n.id,{frequency:n.freq,bls_share_pct:n.bls,cluster:n.cluster}])), year_totals: Object.fromEntries(YEARS.map((y,i)=>([y,{total:TOTALS[i],bls:BLS_N[i],non_bls:TOTALS[i]-BLS_N[i],bls_share_pct:+(BLS_N[i]/TOTALS[i]*100).toFixed(1)}]))), period_averages:{"2015-2020":SHARE_PRE,"2021-2025":SHARE_POST}, topic_share_change: CHANGE_DATA };
   const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='bls-scientometric-data.json'; a.click();
 }
