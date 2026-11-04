@@ -276,6 +276,17 @@
 .finding-card .fc-p{font-size:13px;color:var(--ink-light);line-height:1.65}
 .takeaway{font-size:13px;color:var(--ink);background:#f6f2ea;border-radius:4px;padding:7px 10px;margin:0 0 .9rem;line-height:1.55}
 .takeaway b{color:var(--accent);font-weight:600}
+.net-grid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:1rem;align-items:start}
+@media(max-width:900px){.net-grid{grid-template-columns:1fr}}
+.net-panel{background:#fff;border:1px solid var(--rule);border-radius:6px;padding:.9rem 1rem;font-size:12.5px;line-height:1.55;color:var(--ink-light)}
+.net-panel h4{font-family:Georgia,'Times New Roman',serif;font-size:15px;color:var(--ink);margin:0 0 .5rem;font-weight:600}
+.net-panel .np-row{display:flex;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px solid var(--rule)}
+.net-panel .np-row:last-child{border-bottom:none}
+.net-panel .np-k{color:var(--ink)}
+.net-panel .np-v{white-space:nowrap;color:var(--ink-muted)}
+.net-panel .np-up{color:var(--green)} .net-panel .np-down{color:var(--accent)}
+.net-panel .np-sub{font-size:11px;color:var(--ink-muted);margin:.2rem 0 .6rem}
+.net-controls{display:flex;gap:16px;align-items:center;flex-wrap:wrap;margin-top:12px;font-size:12px;color:var(--ink-muted)}
 </style>
 </head>
 <body>
@@ -504,11 +515,32 @@
   <div class="section-inner">
     <div class="section-header">
       <h2>Bibliometric Network Map</h2>
-      <p>This map shows which topics tend to appear together in the same article. Each circle represents a topic — larger circles indicate topics that appear more frequently across the corpus. The lines connecting them show how often two topics co-occur in a single article; thicker lines mean more articles cover both topics together. Colors indicate four thematic clusters grouping related topics. The map displays 27 of the 34 topic categories; the 7 lowest-frequency topics fall below the co-occurrence threshold (at least 8 shared articles) and are omitted.</p>
+      <p>This map shows which topics appear together in the same article. Each circle is a topic, sized by the number of articles that carry it; each line joins two topics that appear together, and thicker lines mean more shared articles. Switch between 2015–2020 and 2021–2025 to see how the field’s wiring changed.</p>
     </div>
 
+    <div class="takeaway">Corporate governance is the hub of the field in both periods, but what it connects to has changed. Before 2021, its most frequent companions were Fiduciary Duties (80 articles), Government Intervention / Regulation (72) and Investors / Shareholders (64). After 2021, corporate governance–corporate purpose rose from 34 to 57 articles and corporate governance–stakeholder interests from 21 to 39, in a period one year shorter, while corporate governance–investors/shareholders fell from 64 to 30, –judicial oversight from 47 to 22 and –voting from 35 to 16. Climate/sustainability, which shared 7 articles with corporate governance before 2021, shared 24 after.</div>
+
     <div class="chart-block" style="padding-bottom:1rem">
-      <div style="display:flex; gap:16px; align-items:center; flex-wrap:wrap; margin-bottom:12px">
+      <div class="tab-row" id="netPeriod" style="margin-bottom:10px">
+        <button class="tab-btn" data-period="pre">2015–2020</button>
+        <button class="tab-btn active" data-period="post">2021–2025</button>
+        <button class="tab-btn" data-period="all">All years</button>
+      </div>
+      <p id="net-hint">Click a topic to pin it and see its pairings on the right · Drag circles to rearrange · Click the background to unpin</p>
+      <div class="net-grid">
+        <div>
+          <div style="position:relative">
+            <div id="net-tooltip"></div>
+            <svg id="netSvg" style="width:100%;display:block;background:transparent;border:1px solid var(--rule);border-radius:4px"></svg>
+          </div>
+          <p id="netStatus" style="font-size:11.5px;color:var(--ink-muted);margin:6px 0 0"></p>
+        </div>
+        <div>
+          <div class="net-panel" id="netPinned"></div>
+          <div class="net-panel" id="netChanges" style="margin-top:1rem"></div>
+        </div>
+      </div>
+      <div class="net-controls">
         <div class="net-legend" id="netLegend" style="margin-bottom:0">
           <span class="net-leg active" data-cluster="all"><span class="net-leg-dot" style="background:#888"></span>All</span>
           <span class="net-leg" data-cluster="Corporate Governance &amp; Control"><span class="net-leg-dot" style="background:var(--blue)"></span>Corp. Governance &amp; Control</span>
@@ -518,18 +550,13 @@
         </div>
         <div style="display:flex;align-items:center;gap:8px;font-size:12px;color:var(--ink-muted)">
           <label>Min. edge:</label>
-          <input type="range" id="netThresh" min="8" max="80" value="8" step="4" style="width:90px">
+          <input type="range" id="netThresh" min="4" max="60" value="8" step="2" style="width:90px">
           <span id="netThreshVal" style="min-width:30px;font-size:12px">≥8</span>
         </div>
         <select class="ctrl-select" id="netColor">
           <option value="cluster">Color by cluster</option>
           <option value="bls">Color by corporate-society share</option>
         </select>
-      </div>
-      <p id="net-hint">You can drag circles to rearrange the map · Hover over any circle for details · Click a cluster label to highlight that group</p>
-      <div style="position:relative">
-        <div id="net-tooltip"></div>
-        <svg id="netSvg" style="width:100%;display:block;background:transparent;border:1px solid var(--rule);border-radius:4px"></svg>
       </div>
     </div>
   </div>
@@ -630,97 +657,9 @@ const TREND_DATA = {
   "Social Issues":{bls:[1.3, 0.0, 0.0, 1.3, 0.0, 1.3, 0.0, 0.8, 0.8, 0.0, 0.9],non:[0.0, 0.0, 0.0, 0.6, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0]},
 };
 
-const NET_NODES = [
-  {id:"Corporate Governance",freq:1275,bls:35.8,cluster:"Corporate Governance & Control"},
-  {id:"Government Intervention / Regulation",freq:475,bls:49.7,cluster:"Regulation & Compliance"},
-  {id:"Fiduciary Duties",freq:286,bls:24.1,cluster:"Corporate Governance & Control"},
-  {id:"Corporate Purpose",freq:238,bls:85.3,cluster:"Stakeholder & Purpose"},
-  {id:"Judicial Oversight",freq:232,bls:15.1,cluster:"Corporate Governance & Control"},
-  {id:"Securities Law / Litigation",freq:180,bls:19.4,cluster:"Regulation & Compliance"},
-  {id:"Accounting / Compliance",freq:174,bls:32.8,cluster:"Regulation & Compliance"},
-  {id:"CSR",freq:159,bls:98.7,cluster:"Stakeholder & Purpose"},
-  {id:"Corporate Bankruptcy & Restructuring",freq:155,bls:11.0,cluster:"Corporate Governance & Control"},
-  {id:"Climate / Sustainability",freq:145,bls:95.2,cluster:"Emerging & Niche"},
-  {id:"Investors / Shareholders",freq:132,bls:14.4,cluster:"Corporate Governance & Control"},
-  {id:"Competition & Market Power",freq:122,bls:36.1,cluster:"Regulation & Compliance"},
-  {id:"Rights of Corporations",freq:114,bls:53.5,cluster:"Stakeholder & Purpose"},
-  {id:"Shareholder Activism",freq:103,bls:33.0,cluster:"Corporate Governance & Control"},
-  {id:"Banking / Financial Regulation",freq:101,bls:26.7,cluster:"Regulation & Compliance"},
-  {id:"Stakeholder Interests",freq:100,bls:83.0,cluster:"Stakeholder & Purpose"},
-  {id:"Contracts / Agreements",freq:93,bls:32.3,cluster:"Corporate Governance & Control"},
-  {id:"Social Enterprise / Benefit Corp.",freq:92,bls:98.9,cluster:"Stakeholder & Purpose"},
-  {id:"DEI",freq:83,bls:96.4,cluster:"Stakeholder & Purpose"},
-  {id:"Mergers & Acquisitions",freq:72,bls:12.5,cluster:"Corporate Governance & Control"},
-  {id:"Global Perspective",freq:70,bls:45.7,cluster:"Regulation & Compliance"},
-  {id:"Voting",freq:65,bls:3.1,cluster:"Corporate Governance & Control"},
-  {id:"State Courts & Statutes",freq:64,bls:6.3,cluster:"Corporate Governance & Control"},
-  {id:"Crypto / AI",freq:46,bls:26.1,cluster:"Emerging & Niche"},
-  {id:"LLCs",freq:42,bls:11.9,cluster:"Corporate Governance & Control"},
-  {id:"Tax",freq:38,bls:36.8,cluster:"Regulation & Compliance"},
-  {id:"Startups",freq:26,bls:19.2,cluster:"Emerging & Niche"},
-];
-
-const NET_EDGES = [
-  ["Corporate Governance","Fiduciary Duties",152],
-  ["Corporate Governance","Government Intervention / Regulation",144],
-  ["Corporate Governance","Investors / Shareholders",94],
-  ["Corporate Governance","Corporate Purpose",91],
-  ["Corporate Governance","Shareholder Activism",79],
-  ["Corporate Governance","Judicial Oversight",69],
-  ["Corporate Governance","Stakeholder Interests",60],
-  ["Corporate Governance","Voting",51],
-  ["Accounting / Compliance","Corporate Governance",48],
-  ["Corporate Governance","DEI",46],
-  ["Accounting / Compliance","Government Intervention / Regulation",41],
-  ["Government Intervention / Regulation","Securities Law / Litigation",39],
-  ["Competition & Market Power","Government Intervention / Regulation",33],
-  ["Climate / Sustainability","Corporate Governance",31],
-  ["Corporate Governance","Social Enterprise / Benefit Corp.",30],
-  ["Corporate Governance","State Courts & Statutes",30],
-  ["Banking / Financial Regulation","Corporate Governance",30],
-  ["Fiduciary Duties","Judicial Oversight",29],
-  ["CSR","Corporate Governance",29],
-  ["Corporate Governance","Crypto / AI",28],
-  ["Corporate Bankruptcy & Restructuring","Judicial Oversight",28],
-  ["Corporate Governance","Securities Law / Litigation",28],
-  ["Climate / Sustainability","Government Intervention / Regulation",28],
-  ["CSR","Corporate Purpose",27],
-  ["Corporate Purpose","Social Enterprise / Benefit Corp.",27],
-  ["Government Intervention / Regulation","Judicial Oversight",24],
-  ["Contracts / Agreements","Corporate Governance",23],
-  ["Corporate Governance","Rights of Corporations",22],
-  ["Corporate Governance","Global Perspective",20],
-  ["Government Intervention / Regulation","Rights of Corporations",20],
-  ["Corporate Bankruptcy & Restructuring","Corporate Governance",20],
-  ["CSR","Government Intervention / Regulation",19],
-  ["Corporate Purpose","Stakeholder Interests",19],
-  ["Judicial Oversight","Mergers & Acquisitions",17],
-  ["Corporate Purpose","Rights of Corporations",17],
-  ["Judicial Oversight","Securities Law / Litigation",15],
-  ["Climate / Sustainability","Securities Law / Litigation",15],
-  ["Banking / Financial Regulation","Government Intervention / Regulation",14],
-  ["Judicial Oversight","Rights of Corporations",13],
-  ["Corporate Purpose","Fiduciary Duties",13],
-  ["Banking / Financial Regulation","Securities Law / Litigation",13],
-  ["Global Perspective","Government Intervention / Regulation",12],
-  ["Corporate Bankruptcy & Restructuring","Fiduciary Duties",12],
-  ["Shareholder Activism","Voting",12],
-  ["Contracts / Agreements","Mergers & Acquisitions",12],
-  ["CSR","Climate / Sustainability",11],
-  ["Corporate Governance","Mergers & Acquisitions",11],
-  ["Fiduciary Duties","Government Intervention / Regulation",10],
-  ["Corporate Governance","Tax",10],
-  ["Competition & Market Power","Corporate Governance",10],
-  ["Fiduciary Duties","LLCs",10],
-  ["Accounting / Compliance","Securities Law / Litigation",10],
-  ["Corporate Governance","Startups",9],
-  ["Judicial Oversight","State Courts & Statutes",9],
-  ["Contracts / Agreements","Corporate Bankruptcy & Restructuring",9],
-  ["Climate / Sustainability","Fiduciary Duties",9],
-  ["Corporate Governance","LLCs",9],
-  ["Banking / Financial Regulation","Corporate Bankruptcy & Restructuring",8],
-  ["Accounting / Compliance","Climate / Sustainability",8],
-];
+const NET_DATA = {"all":{"nodes":[{"id":"Corporate Governance","freq":1275,"bls":35.8,"cluster":"Corporate Governance & Control"},{"id":"Government Intervention / Regulation","freq":475,"bls":49.7,"cluster":"Regulation & Compliance"},{"id":"Fiduciary Duties","freq":286,"bls":24.1,"cluster":"Corporate Governance & Control"},{"id":"Corporate Purpose","freq":238,"bls":85.3,"cluster":"Stakeholder & Purpose"},{"id":"Judicial Oversight","freq":232,"bls":15.1,"cluster":"Corporate Governance & Control"},{"id":"Securities Law / Litigation","freq":180,"bls":19.4,"cluster":"Regulation & Compliance"},{"id":"Accounting / Compliance","freq":174,"bls":32.8,"cluster":"Regulation & Compliance"},{"id":"CSR","freq":159,"bls":98.7,"cluster":"Stakeholder & Purpose"},{"id":"Corporate Bankruptcy & Restructuring","freq":155,"bls":11.0,"cluster":"Corporate Governance & Control"},{"id":"Climate / Sustainability","freq":145,"bls":95.2,"cluster":"Emerging & Niche"},{"id":"Investors / Shareholders","freq":132,"bls":14.4,"cluster":"Corporate Governance & Control"},{"id":"Competition & Market Power","freq":122,"bls":36.1,"cluster":"Regulation & Compliance"},{"id":"Rights of Corporations","freq":114,"bls":53.5,"cluster":"Stakeholder & Purpose"},{"id":"Shareholder Activism","freq":103,"bls":33.0,"cluster":"Corporate Governance & Control"},{"id":"Banking / Financial Regulation","freq":101,"bls":26.7,"cluster":"Regulation & Compliance"},{"id":"Stakeholder Interests","freq":100,"bls":83.0,"cluster":"Stakeholder & Purpose"},{"id":"Contracts / Agreements","freq":93,"bls":32.3,"cluster":"Corporate Governance & Control"},{"id":"Social Enterprise / Benefit Corp.","freq":92,"bls":98.9,"cluster":"Stakeholder & Purpose"},{"id":"DEI","freq":83,"bls":96.4,"cluster":"Stakeholder & Purpose"},{"id":"Mergers & Acquisitions","freq":72,"bls":12.5,"cluster":"Corporate Governance & Control"},{"id":"Global Perspective","freq":70,"bls":45.7,"cluster":"Regulation & Compliance"},{"id":"Voting","freq":65,"bls":3.1,"cluster":"Corporate Governance & Control"},{"id":"State Courts & Statutes","freq":64,"bls":6.2,"cluster":"Corporate Governance & Control"},{"id":"Crypto / AI","freq":46,"bls":26.1,"cluster":"Emerging & Niche"},{"id":"LLCs","freq":42,"bls":11.9,"cluster":"Corporate Governance & Control"},{"id":"Tax","freq":38,"bls":36.8,"cluster":"Regulation & Compliance"},{"id":"Startups","freq":26,"bls":19.2,"cluster":"Emerging & Niche"},{"id":"Nonprofits","freq":22,"bls":45.5,"cluster":"Emerging & Niche"},{"id":"Supply / Value Chains","freq":20,"bls":100.0,"cluster":"Stakeholder & Purpose"},{"id":"Insurance / Risk","freq":11,"bls":36.4,"cluster":"Regulation & Compliance"},{"id":"Politics","freq":11,"bls":81.8,"cluster":"Stakeholder & Purpose"},{"id":"Public Good","freq":9,"bls":88.9,"cluster":"Stakeholder & Purpose"},{"id":"Business Associations","freq":8,"bls":37.5,"cluster":"Emerging & Niche"},{"id":"Social Issues","freq":7,"bls":85.7,"cluster":"Emerging & Niche"}],"edges":[["Corporate Governance","Fiduciary Duties",152,16],["Corporate Governance","Government Intervention / Regulation",144,36],["Corporate Governance","Investors / Shareholders",94,7],["Corporate Governance","Corporate Purpose",91,76],["Corporate Governance","Shareholder Activism",79,25],["Corporate Governance","Judicial Oversight",69,3],["Corporate Governance","Stakeholder Interests",60,75],["Corporate Governance","Voting",51,2],["Accounting / Compliance","Corporate Governance",48,27],["Corporate Governance","DEI",46,93],["Accounting / Compliance","Government Intervention / Regulation",41,22],["Government Intervention / Regulation","Securities Law / Litigation",39,21],["Competition & Market Power","Government Intervention / Regulation",33,52],["Climate / Sustainability","Corporate Governance",31,100],["Corporate Governance","Social Enterprise / Benefit Corp.",30,100],["Corporate Governance","State Courts & Statutes",30,0],["Banking / Financial Regulation","Corporate Governance",30,13],["Fiduciary Duties","Judicial Oversight",29,3],["CSR","Corporate Governance",29,93],["Corporate Governance","Crypto / AI",28,14],["Corporate Bankruptcy & Restructuring","Judicial Oversight",28,14],["Corporate Governance","Securities Law / Litigation",28,18],["Climate / Sustainability","Government Intervention / Regulation",28,93],["CSR","Corporate Purpose",27,100],["Corporate Purpose","Social Enterprise / Benefit Corp.",27,100],["Government Intervention / Regulation","Judicial Oversight",24,46],["Contracts / Agreements","Corporate Governance",23,17],["Corporate Governance","Rights of Corporations",22,64],["Corporate Governance","Global Perspective",20,25],["Government Intervention / Regulation","Rights of Corporations",20,60],["Corporate Bankruptcy & Restructuring","Corporate Governance",20,5],["CSR","Government Intervention / Regulation",19,100],["Corporate Purpose","Stakeholder Interests",19,95],["Judicial Oversight","Mergers & Acquisitions",17,0],["Corporate Purpose","Rights of Corporations",17,82],["Judicial Oversight","Securities Law / Litigation",15,7],["Climate / Sustainability","Securities Law / Litigation",15,80],["Banking / Financial Regulation","Government Intervention / Regulation",14,43],["Judicial Oversight","Rights of Corporations",13,31],["Corporate Purpose","Fiduciary Duties",13,62],["Banking / Financial Regulation","Securities Law / Litigation",13,0],["Global Perspective","Government Intervention / Regulation",12,42],["Corporate Bankruptcy & Restructuring","Fiduciary Duties",12,0],["Shareholder Activism","Voting",12,0],["Contracts / Agreements","Mergers & Acquisitions",12,0],["CSR","Climate / Sustainability",11,100],["Corporate Governance","Mergers & Acquisitions",11,9],["Fiduciary Duties","Government Intervention / Regulation",10,80],["Corporate Governance","Tax",10,0],["Competition & Market Power","Corporate Governance",10,30],["Fiduciary Duties","LLCs",10,0],["Accounting / Compliance","Securities Law / Litigation",10,10],["Corporate Governance","Startups",9,33],["Judicial Oversight","State Courts & Statutes",9,0],["Contracts / Agreements","Corporate Bankruptcy & Restructuring",9,11],["Climate / Sustainability","Fiduciary Duties",9,89],["Corporate Governance","LLCs",9,0],["Banking / Financial Regulation","Corporate Bankruptcy & Restructuring",8,0],["Accounting / Compliance","Climate / Sustainability",8,88],["LLCs","State Courts & Statutes",7,0],["CSR","Global Perspective",7,100],["Corporate Governance","Nonprofits",7,14],["CSR","Contracts / Agreements",6,100],["DEI","Fiduciary Duties",6,100],["Government Intervention / Regulation","Mergers & Acquisitions",6,0],["Investors / Shareholders","Securities Law / Litigation",6,0],["Contracts / Agreements","Government Intervention / Regulation",5,80],["Banking / Financial Regulation","Investors / Shareholders",5,20],["Accounting / Compliance","Fiduciary Duties",5,0],["Corporate Purpose","Nonprofits",5,100],["Banking / Financial Regulation","Climate / Sustainability",5,100],["Global Perspective","Supply / Value Chains",5,100],["Fiduciary Duties","Voting",5,20],["CSR","Supply / Value Chains",5,100],["Securities Law / Litigation","Startups",5,0],["DEI","Government Intervention / Regulation",5,100],["Competition & Market Power","Mergers & Acquisitions",5,0],["Government Intervention / Regulation","Stakeholder Interests",5,100],["Contracts / Agreements","Startups",4,0],["Accounting / Compliance","Social Enterprise / Benefit Corp.",4,100],["Accounting / Compliance","Judicial Oversight",4,0],["Corporate Governance","Insurance / Risk",4,50],["Climate / Sustainability","Shareholder Activism",4,100],["Contracts / Agreements","Supply / Value Chains",4,100],["Corporate Governance","Politics",4,75],["Competition & Market Power","Investors / Shareholders",4,25],["Climate / Sustainability","Contracts / Agreements",4,100],["Fiduciary Duties","Shareholder Activism",4,0],["Securities Law / Litigation","Shareholder Activism",4,50],["Corporate Bankruptcy & Restructuring","Global Perspective",4,0],["Government Intervention / Regulation","Investors / Shareholders",4,25],["Crypto / AI","Securities Law / Litigation",3,0],["Crypto / AI","LLCs",3,33],["Government Intervention / Regulation","Tax",3,67],["Climate / Sustainability","Competition & Market Power",3,100],["Contracts / Agreements","LLCs",3,0],["Climate / Sustainability","Judicial Oversight",3,100],["Fiduciary Duties","Mergers & Acquisitions",3,0],["Banking / Financial Regulation","DEI",3,100],["Corporate Bankruptcy & Restructuring","Social Enterprise / Benefit Corp.",3,100],["Business Associations","State Courts & Statutes",3,0],["Accounting / Compliance","Competition & Market Power",3,67],["Judicial Oversight","LLCs",3,0],["CSR","Judicial Oversight",3,100],["Government Intervention / Regulation","Politics",3,100],["CSR","Tax",3,100],["Accounting / Compliance","Global Perspective",3,0],["Corporate Bankruptcy & Restructuring","Securities Law / Litigation",3,0],["Government Intervention / Regulation","Social Issues",3,100],["Business Associations","Government Intervention / Regulation",3,67],["Government Intervention / Regulation","Public Good",3,67],["Fiduciary Duties","Securities Law / Litigation",3,33],["Government Intervention / Regulation","Voting",3,0]],"years":"2015\u20132025","n":2618},"pre":{"nodes":[{"id":"Corporate Governance","freq":687,"bls":25.9,"cluster":"Corporate Governance & Control"},{"id":"Government Intervention / Regulation","freq":243,"bls":42.0,"cluster":"Regulation & Compliance"},{"id":"Fiduciary Duties","freq":156,"bls":14.7,"cluster":"Corporate Governance & Control"},{"id":"Judicial Oversight","freq":145,"bls":13.1,"cluster":"Corporate Governance & Control"},{"id":"Corporate Purpose","freq":113,"bls":79.6,"cluster":"Stakeholder & Purpose"},{"id":"Accounting / Compliance","freq":101,"bls":23.8,"cluster":"Regulation & Compliance"},{"id":"CSR","freq":91,"bls":100.0,"cluster":"Stakeholder & Purpose"},{"id":"Rights of Corporations","freq":87,"bls":52.9,"cluster":"Stakeholder & Purpose"},{"id":"Securities Law / Litigation","freq":86,"bls":9.3,"cluster":"Regulation & Compliance"},{"id":"Corporate Bankruptcy & Restructuring","freq":84,"bls":8.3,"cluster":"Corporate Governance & Control"},{"id":"Investors / Shareholders","freq":76,"bls":5.3,"cluster":"Corporate Governance & Control"},{"id":"Competition & Market Power","freq":63,"bls":23.8,"cluster":"Regulation & Compliance"},{"id":"Social Enterprise / Benefit Corp.","freq":60,"bls":100.0,"cluster":"Stakeholder & Purpose"},{"id":"Banking / Financial Regulation","freq":58,"bls":17.2,"cluster":"Regulation & Compliance"},{"id":"Shareholder Activism","freq":55,"bls":29.1,"cluster":"Corporate Governance & Control"},{"id":"Voting","freq":46,"bls":2.2,"cluster":"Corporate Governance & Control"},{"id":"Global Perspective","freq":46,"bls":50.0,"cluster":"Regulation & Compliance"},{"id":"Mergers & Acquisitions","freq":43,"bls":7.0,"cluster":"Corporate Governance & Control"},{"id":"Contracts / Agreements","freq":42,"bls":28.6,"cluster":"Corporate Governance & Control"},{"id":"Stakeholder Interests","freq":36,"bls":75.0,"cluster":"Stakeholder & Purpose"},{"id":"Climate / Sustainability","freq":34,"bls":97.1,"cluster":"Emerging & Niche"},{"id":"State Courts & Statutes","freq":34,"bls":0.0,"cluster":"Corporate Governance & Control"},{"id":"DEI","freq":32,"bls":93.8,"cluster":"Stakeholder & Purpose"},{"id":"LLCs","freq":23,"bls":13.0,"cluster":"Corporate Governance & Control"},{"id":"Tax","freq":23,"bls":26.1,"cluster":"Regulation & Compliance"},{"id":"Crypto / AI","freq":17,"bls":23.5,"cluster":"Emerging & Niche"},{"id":"Nonprofits","freq":14,"bls":35.7,"cluster":"Emerging & Niche"},{"id":"Startups","freq":13,"bls":15.4,"cluster":"Emerging & Niche"},{"id":"Supply / Value Chains","freq":9,"bls":100.0,"cluster":"Stakeholder & Purpose"},{"id":"Politics","freq":6,"bls":83.3,"cluster":"Stakeholder & Purpose"},{"id":"Insurance / Risk","freq":5,"bls":40.0,"cluster":"Regulation & Compliance"},{"id":"Business Associations","freq":4,"bls":50.0,"cluster":"Emerging & Niche"},{"id":"Social Issues","freq":4,"bls":75.0,"cluster":"Emerging & Niche"},{"id":"Public Good","freq":1,"bls":100.0,"cluster":"Stakeholder & Purpose"}],"edges":[["Corporate Governance","Fiduciary Duties",80,6],["Corporate Governance","Government Intervention / Regulation",72,25],["Corporate Governance","Investors / Shareholders",64,3],["Corporate Governance","Judicial Oversight",47,0],["Corporate Governance","Shareholder Activism",42,19],["Corporate Governance","Voting",35,0],["Corporate Governance","Corporate Purpose",34,56],["Accounting / Compliance","Corporate Governance",29,17],["Accounting / Compliance","Government Intervention / Regulation",26,8],["Corporate Governance","DEI",22,91],["Fiduciary Duties","Judicial Oversight",22,5],["Corporate Governance","Stakeholder Interests",21,62],["Corporate Governance","Social Enterprise / Benefit Corp.",20,100],["Banking / Financial Regulation","Corporate Governance",20,15],["Government Intervention / Regulation","Securities Law / Litigation",20,10],["Corporate Governance","State Courts & Statutes",17,0],["Corporate Governance","Rights of Corporations",16,56],["Government Intervention / Regulation","Judicial Oversight",15,47],["CSR","Corporate Purpose",15,100],["Judicial Oversight","Mergers & Acquisitions",15,0],["Corporate Purpose","Social Enterprise / Benefit Corp.",15,100],["Corporate Governance","Securities Law / Litigation",15,20],["Corporate Purpose","Rights of Corporations",14,79],["Competition & Market Power","Government Intervention / Regulation",14,43],["Corporate Governance","Global Perspective",13,23],["CSR","Corporate Governance",13,100],["CSR","Government Intervention / Regulation",12,100],["Government Intervention / Regulation","Rights of Corporations",12,67],["Corporate Governance","Crypto / AI",11,9],["Corporate Bankruptcy & Restructuring","Judicial Oversight",11,9],["Corporate Bankruptcy & Restructuring","Corporate Governance",11,9],["Global Perspective","Government Intervention / Regulation",8,50],["Judicial Oversight","Rights of Corporations",8,50],["Corporate Purpose","Fiduciary Duties",8,62],["CSR","Climate / Sustainability",8,100],["Fiduciary Duties","LLCs",8,0],["Banking / Financial Regulation","Government Intervention / Regulation",8,25],["Judicial Oversight","Securities Law / Litigation",8,0],["CSR","Global Perspective",7,100],["Contracts / Agreements","Corporate Governance",7,14],["Banking / Financial Regulation","Securities Law / Litigation",7,0],["Corporate Governance","Tax",7,0],["Competition & Market Power","Corporate Governance",7,14],["Climate / Sustainability","Corporate Governance",7,100],["Fiduciary Duties","Government Intervention / Regulation",6,83],["Contracts / Agreements","Corporate Bankruptcy & Restructuring",6,0],["Climate / Sustainability","Government Intervention / Regulation",6,100],["Corporate Purpose","Stakeholder Interests",6,100],["Contracts / Agreements","Mergers & Acquisitions",6,0],["Banking / Financial Regulation","Corporate Bankruptcy & Restructuring",5,0],["Corporate Governance","Nonprofits",5,20],["Corporate Governance","Mergers & Acquisitions",5,20],["Corporate Bankruptcy & Restructuring","Fiduciary Duties",5,0],["Corporate Governance","Startups",4,25],["Climate / Sustainability","Fiduciary Duties",4,100],["Global Perspective","Supply / Value Chains",4,100],["Corporate Governance","LLCs",4,0],["Fiduciary Duties","Voting",4,25],["Shareholder Activism","Voting",4,0],["Judicial Oversight","State Courts & Statutes",4,0],["Accounting / Compliance","Social Enterprise / Benefit Corp.",3,100],["Contracts / Agreements","LLCs",3,0],["Fiduciary Duties","Mergers & Acquisitions",3,0],["LLCs","State Courts & Statutes",3,0],["Accounting / Compliance","Fiduciary Duties",3,0],["CSR","Supply / Value Chains",3,100],["Securities Law / Litigation","Startups",3,0],["Climate / Sustainability","Securities Law / Litigation",3,67],["Competition & Market Power","Mergers & Acquisitions",3,0],["Government Intervention / Regulation","Stakeholder Interests",3,100],["DEI","Government Intervention / Regulation",3,100],["Accounting / Compliance","Securities Law / Litigation",3,0],["Government Intervention / Regulation","Investors / Shareholders",3,0]],"years":"2015\u20132020","n":1412},"post":{"nodes":[{"id":"Corporate Governance","freq":588,"bls":47.4,"cluster":"Corporate Governance & Control"},{"id":"Government Intervention / Regulation","freq":232,"bls":57.8,"cluster":"Regulation & Compliance"},{"id":"Fiduciary Duties","freq":130,"bls":35.4,"cluster":"Corporate Governance & Control"},{"id":"Corporate Purpose","freq":125,"bls":90.4,"cluster":"Stakeholder & Purpose"},{"id":"Climate / Sustainability","freq":111,"bls":94.6,"cluster":"Emerging & Niche"},{"id":"Securities Law / Litigation","freq":94,"bls":28.7,"cluster":"Regulation & Compliance"},{"id":"Judicial Oversight","freq":87,"bls":18.4,"cluster":"Corporate Governance & Control"},{"id":"Accounting / Compliance","freq":73,"bls":45.2,"cluster":"Regulation & Compliance"},{"id":"Corporate Bankruptcy & Restructuring","freq":71,"bls":14.1,"cluster":"Corporate Governance & Control"},{"id":"CSR","freq":68,"bls":97.1,"cluster":"Stakeholder & Purpose"},{"id":"Stakeholder Interests","freq":64,"bls":87.5,"cluster":"Stakeholder & Purpose"},{"id":"Competition & Market Power","freq":59,"bls":49.2,"cluster":"Regulation & Compliance"},{"id":"Investors / Shareholders","freq":56,"bls":26.8,"cluster":"Corporate Governance & Control"},{"id":"Contracts / Agreements","freq":51,"bls":35.3,"cluster":"Corporate Governance & Control"},{"id":"DEI","freq":51,"bls":98.0,"cluster":"Stakeholder & Purpose"},{"id":"Shareholder Activism","freq":48,"bls":37.5,"cluster":"Corporate Governance & Control"},{"id":"Banking / Financial Regulation","freq":43,"bls":39.5,"cluster":"Regulation & Compliance"},{"id":"Social Enterprise / Benefit Corp.","freq":32,"bls":96.9,"cluster":"Stakeholder & Purpose"},{"id":"State Courts & Statutes","freq":30,"bls":13.3,"cluster":"Corporate Governance & Control"},{"id":"Crypto / AI","freq":29,"bls":27.6,"cluster":"Emerging & Niche"},{"id":"Mergers & Acquisitions","freq":29,"bls":20.7,"cluster":"Corporate Governance & Control"},{"id":"Rights of Corporations","freq":27,"bls":55.6,"cluster":"Stakeholder & Purpose"},{"id":"Global Perspective","freq":24,"bls":37.5,"cluster":"Regulation & Compliance"},{"id":"LLCs","freq":19,"bls":10.5,"cluster":"Corporate Governance & Control"},{"id":"Voting","freq":19,"bls":5.3,"cluster":"Corporate Governance & Control"},{"id":"Tax","freq":15,"bls":53.3,"cluster":"Regulation & Compliance"},{"id":"Startups","freq":13,"bls":23.1,"cluster":"Emerging & Niche"},{"id":"Supply / Value Chains","freq":11,"bls":100.0,"cluster":"Stakeholder & Purpose"},{"id":"Nonprofits","freq":8,"bls":62.5,"cluster":"Emerging & Niche"},{"id":"Public Good","freq":8,"bls":87.5,"cluster":"Stakeholder & Purpose"},{"id":"Insurance / Risk","freq":6,"bls":33.3,"cluster":"Regulation & Compliance"},{"id":"Politics","freq":5,"bls":80.0,"cluster":"Stakeholder & Purpose"},{"id":"Business Associations","freq":4,"bls":25.0,"cluster":"Emerging & Niche"},{"id":"Social Issues","freq":3,"bls":100.0,"cluster":"Emerging & Niche"}],"edges":[["Corporate Governance","Fiduciary Duties",72,26],["Corporate Governance","Government Intervention / Regulation",72,47],["Corporate Governance","Corporate Purpose",57,88],["Corporate Governance","Stakeholder Interests",39,82],["Corporate Governance","Shareholder Activism",37,32],["Corporate Governance","Investors / Shareholders",30,17],["Corporate Governance","DEI",24,96],["Climate / Sustainability","Corporate Governance",24,100],["Corporate Governance","Judicial Oversight",22,9],["Climate / Sustainability","Government Intervention / Regulation",22,91],["Competition & Market Power","Government Intervention / Regulation",19,58],["Accounting / Compliance","Corporate Governance",19,42],["Government Intervention / Regulation","Securities Law / Litigation",19,32],["Corporate Bankruptcy & Restructuring","Judicial Oversight",17,18],["Corporate Governance","Crypto / AI",17,18],["Contracts / Agreements","Corporate Governance",16,19],["CSR","Corporate Governance",16,88],["Corporate Governance","Voting",16,6],["Accounting / Compliance","Government Intervention / Regulation",15,47],["Corporate Governance","State Courts & Statutes",13,0],["Corporate Governance","Securities Law / Litigation",13,15],["Corporate Purpose","Stakeholder Interests",13,92],["CSR","Corporate Purpose",12,100],["Corporate Purpose","Social Enterprise / Benefit Corp.",12,100],["Climate / Sustainability","Securities Law / Litigation",12,83],["Banking / Financial Regulation","Corporate Governance",10,10],["Corporate Governance","Social Enterprise / Benefit Corp.",10,100],["Corporate Bankruptcy & Restructuring","Corporate Governance",9,0],["Government Intervention / Regulation","Judicial Oversight",9,44],["Shareholder Activism","Voting",8,0],["Government Intervention / Regulation","Rights of Corporations",8,50],["Corporate Bankruptcy & Restructuring","Fiduciary Duties",7,0],["Fiduciary Duties","Judicial Oversight",7,0],["Judicial Oversight","Securities Law / Litigation",7,14],["Accounting / Compliance","Climate / Sustainability",7,86],["CSR","Government Intervention / Regulation",7,100],["Corporate Governance","Global Perspective",7,29],["Accounting / Compliance","Securities Law / Litigation",7,14],["DEI","Fiduciary Duties",6,100],["Corporate Governance","Mergers & Acquisitions",6,0],["Banking / Financial Regulation","Securities Law / Litigation",6,0],["Banking / Financial Regulation","Government Intervention / Regulation",6,67],["Contracts / Agreements","Mergers & Acquisitions",6,0],["Corporate Governance","Rights of Corporations",6,83],["Judicial Oversight","Rights of Corporations",5,0],["Judicial Oversight","State Courts & Statutes",5,0],["Corporate Governance","LLCs",5,0],["Corporate Governance","Startups",5,40],["Climate / Sustainability","Fiduciary Duties",5,80],["Corporate Purpose","Fiduciary Duties",5,60],["LLCs","State Courts & Statutes",4,0],["CSR","Contracts / Agreements",4,100],["Fiduciary Duties","Government Intervention / Regulation",4,75],["Corporate Purpose","Nonprofits",4,100],["Banking / Financial Regulation","Climate / Sustainability",4,100],["Global Perspective","Government Intervention / Regulation",4,25],["Investors / Shareholders","Securities Law / Litigation",4,0],["Government Intervention / Regulation","Mergers & Acquisitions",4,0],["Crypto / AI","Securities Law / Litigation",3,0],["Corporate Governance","Tax",3,0],["Banking / Financial Regulation","Corporate Bankruptcy & Restructuring",3,0],["Competition & Market Power","Corporate Governance",3,67],["Contracts / Agreements","Startups",3,0],["Climate / Sustainability","Competition & Market Power",3,100],["Climate / Sustainability","Judicial Oversight",3,100],["Corporate Purpose","Rights of Corporations",3,100],["Corporate Governance","Insurance / Risk",3,67],["Climate / Sustainability","Shareholder Activism",3,100],["Contracts / Agreements","Corporate Bankruptcy & Restructuring",3,33],["Competition & Market Power","Investors / Shareholders",3,33],["Climate / Sustainability","Contracts / Agreements",3,100],["CSR","Climate / Sustainability",3,100],["Banking / Financial Regulation","Investors / Shareholders",3,33],["Contracts / Agreements","Government Intervention / Regulation",3,67],["Corporate Governance","Politics",3,67],["Government Intervention / Regulation","Public Good",3,67],["Securities Law / Litigation","Shareholder Activism",3,33]],"years":"2021\u20132025","n":1206}};
+const NET_CHANGES = {"up":[{"a":"Corporate Governance","b":"Corporate Purpose","pre":34,"post":57,"rate":5.7},{"a":"Corporate Governance","b":"Stakeholder Interests","pre":21,"post":39,"rate":4.3},{"a":"Climate / Sustainability","b":"Corporate Governance","pre":7,"post":24,"rate":3.6},{"a":"Climate / Sustainability","b":"Government Intervention / Regulation","pre":6,"post":22,"rate":3.4},{"a":"Corporate Governance","b":"Government Intervention / Regulation","pre":72,"post":72,"rate":2.4},{"a":"Contracts / Agreements","b":"Corporate Governance","pre":7,"post":16,"rate":2.0}],"down":[{"a":"Corporate Governance","b":"Investors / Shareholders","pre":64,"post":30,"rate":-4.7},{"a":"Corporate Governance","b":"Judicial Oversight","pre":47,"post":22,"rate":-3.4},{"a":"Corporate Governance","b":"Voting","pre":35,"post":16,"rate":-2.6},{"a":"Fiduciary Duties","b":"Judicial Oversight","pre":22,"post":7,"rate":-2.3},{"a":"Judicial Oversight","b":"Mergers & Acquisitions","pre":15,"post":2,"rate":-2.1},{"a":"Corporate Purpose","b":"Rights of Corporations","pre":14,"post":3,"rate":-1.7}]};
+let netPeriod = 'post', NET_NODES = NET_DATA[netPeriod].nodes, NET_EDGES = NET_DATA[netPeriod].edges, netPinned = null;
 
 // ══════════════════════════════════
 // NAV
@@ -990,8 +929,34 @@ const CLUSTER_COLORS = {
   "Emerging & Niche":"#4a3a8a",
 };
 const blsColorScale = d3.scaleSequential([0,100], d3.interpolate("#C8DCF0","#0C2D5C"));
-const nodeById = Object.fromEntries(NET_NODES.map(d=>[d.id,d]));
-const sizeScale = d3.scaleSqrt().domain([26,1275]).range([5,32]);
+let nodeById, sizeScale;
+function setNetPeriod(p) {
+  netPeriod = p; NET_NODES = NET_DATA[p].nodes; NET_EDGES = NET_DATA[p].edges;
+  nodeById = Object.fromEntries(NET_NODES.map(d=>[d.id,d]));
+  const fr = NET_NODES.map(d=>d.freq);
+  sizeScale = d3.scaleSqrt().domain([Math.min(...fr), Math.max(...fr)]).range([5,32]);
+  if (netPinned && !nodeById[netPinned]) netPinned = null;
+}
+setNetPeriod('post');
+function renderChanges() {
+  const row = r => `<div class="np-row"><span class="np-k">${shortLabel(r.a)} – ${shortLabel(r.b)}</span><span class="np-v">${r.pre} → ${r.post} <span class="${r.rate>0?'np-up':'np-down'}">${r.rate>0?'+':''}${r.rate}/yr</span></span></div>`;
+  document.getElementById('netChanges').innerHTML = `<h4>What changed after 2021</h4><div class="np-sub">Articles sharing the pair, 2015–2020 → 2021–2025, and the change in the yearly rate.</div>`
+    + `<div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--green);margin:.4rem 0 .2rem">Pairings that grew</div>` + NET_CHANGES.up.map(row).join('')
+    + `<div style="font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--accent);margin:.8rem 0 .2rem">Pairings that shrank</div>` + NET_CHANGES.down.map(row).join('');
+}
+function renderPinned(links) {
+  const el = document.getElementById('netPinned');
+  const yrs = NET_DATA[netPeriod].years;
+  if (!netPinned || !nodeById[netPinned]) {
+    el.innerHTML = `<h4>Pick a topic</h4><div class="np-sub">Click any circle to see which topics it is most often paired with in ${yrs}.</div>`; return;
+  }
+  const d = nodeById[netPinned];
+  const pairs = NET_EDGES.filter(e=>e[0]===d.id||e[1]===d.id).map(e=>({other:e[0]===d.id?e[1]:e[0],w:e[2],bls:e[3]})).sort((a,b)=>b.w-a.w).slice(0,6);
+  el.innerHTML = `<h4>${d.id}</h4><div class="np-sub">${d.freq.toLocaleString()} articles in ${yrs} · ${d.bls.toFixed(1)}% corporate-society</div>`
+    + (pairs.length ? pairs.map(p=>`<div class="np-row"><span class="np-k">${p.other}</span><span class="np-v">${p.w} articles · ${p.bls}% c-s</span></div>`).join('') : `<div class="np-sub">No pairing with three or more shared articles.</div>`)
+    + `<div class="np-sub" style="margin-top:.5rem">“c-s” = share of those shared articles coded corporate-society.</div>`;
+}
+renderChanges(); renderPinned();
 
 let netBuilt = false, filterCluster = 'all', netThresh = 8, netColorMode = 'cluster', netSim, netChart;
 
@@ -1017,7 +982,21 @@ function buildNetwork() {
   const usedIds = new Set(filteredEdges.flatMap(([a,b])=>[a,b]));
   const nodes = NET_NODES.filter(d=>usedIds.has(d.id)).map(d=>({...d}));
   const links = filteredEdges.map(([s,t,w])=>({source:s,target:t,weight:w}));
-  const wScale = d3.scaleLinear().domain([8,152]).range([0.5,6]);
+  const maxW = Math.max(8, ...links.map(l=>l.weight));
+  const wScale = d3.scaleLinear().domain([Math.min(netThresh,8),maxW]).range([0.5,6]);
+  document.getElementById('netStatus').textContent = `${NET_DATA[netPeriod].years}: ${nodes.length} of 34 topics and ${links.length} pairings with at least ${netThresh} shared articles (${NET_DATA[netPeriod].n.toLocaleString()} articles).`;
+  const applyFocus = () => {
+    if (netPinned && nodeById[netPinned]) {
+      const linked = links.filter(l=>l.source.id===netPinned||l.target.id===netPinned).map(l=>l.source.id===netPinned?l.target.id:l.source.id);
+      node.attr("fill-opacity",n=>n.id===netPinned||linked.includes(n.id)?0.92:0.07).attr("stroke",n=>n.id===netPinned?'#222':'#F8F5EF').attr("stroke-width",n=>n.id===netPinned?2.5:1.5);
+      link.attr("stroke-opacity",l=>l.source.id===netPinned||l.target.id===netPinned?0.85:0.04);
+    } else {
+      node.attr("fill-opacity",d=>filterCluster==='all'||d.cluster===filterCluster?0.88:0.1).attr("stroke",'#F8F5EF').attr("stroke-width",1.5);
+      link.attr("stroke-opacity",0.6);
+    }
+    renderPinned(links);
+  };
+  let node, link;
 
   netSim = d3.forceSimulation(nodes)
     .force("link",d3.forceLink(links).id(d=>d.id).distance(d=>95-Math.log(d.weight)*9).strength(0.5))
@@ -1027,12 +1006,13 @@ function buildNetwork() {
     .force("x",d3.forceX(W/2).strength(0.04))
     .force("y",d3.forceY(H/2).strength(0.04));
 
-  const link = svg.append("g").selectAll("line").data(links).join("line")
+  svg.on("click", (e) => { if (e.target === svgEl) { netPinned = null; applyFocus(); } });
+  link = svg.append("g").selectAll("line").data(links).join("line")
     .attr("stroke","rgba(100,90,80,0.25)")
     .attr("stroke-width",d=>wScale(d.weight))
     .attr("stroke-linecap","round");
 
-  const node = svg.append("g").selectAll("circle").data(nodes).join("circle")
+  node = svg.append("g").selectAll("circle").data(nodes).join("circle")
     .attr("r",d=>sizeScale(d.freq))
     .attr("fill",d=>getNodeColor(d))
     .attr("fill-opacity",d=>filterCluster==='all'||d.cluster===filterCluster?0.88:0.1)
@@ -1053,11 +1033,11 @@ function buildNetwork() {
     .on("mousemove",e=>{const tt=document.getElementById("net-tooltip");tt.style.left=(e.offsetX+14)+'px';tt.style.top=(e.offsetY-10)+'px';})
     .on("mouseout",()=>{
       document.getElementById("net-tooltip").style.display='none';
-      node.attr("fill-opacity",d=>filterCluster==='all'||d.cluster===filterCluster?0.88:0.1);
-      link.attr("stroke-opacity",0.6);
-    });
+      applyFocus();
+    })
+    .on("click",(e,d)=>{ e.stopPropagation(); netPinned = (netPinned===d.id) ? null : d.id; applyFocus(); });
 
-  const label = svg.append("g").selectAll("text").data(nodes.filter(d=>d.freq>70)).join("text")
+  const label = svg.append("g").selectAll("text").data(nodes.filter(d=>d.freq>(netPeriod==='all'?70:35))).join("text")
     .attr("text-anchor","middle")
     .attr("font-size", d => Math.min(Math.max(sizeScale(d.freq)*0.30, 7), 9.5))
     .attr("font-weight","500").attr("fill","#fff").attr("pointer-events","none");
@@ -1077,6 +1057,7 @@ function buildNetwork() {
     }
   });
 
+  applyFocus();
   netSim.on("tick",()=>{
     nodes.forEach(d=>{const r=sizeScale(d.freq)+2;d.x=Math.max(r,Math.min(W-r,d.x));d.y=Math.max(r,Math.min(H-r,d.y));});
     link.attr("x1",d=>d.source.x).attr("y1",d=>d.source.y).attr("x2",d=>d.target.x).attr("y2",d=>d.target.y);
@@ -1085,6 +1066,11 @@ function buildNetwork() {
   });
 }
 
+document.getElementById('netPeriod').addEventListener('click', e => {
+  const btn = e.target.closest('.tab-btn'); if(!btn) return;
+  document.querySelectorAll('#netPeriod .tab-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active'); setNetPeriod(btn.dataset.period); if(netBuilt) buildNetwork(); else renderPinned();
+});
 document.getElementById('netThresh').addEventListener('input',function(){
   netThresh=+this.value;
   document.getElementById('netThreshVal').textContent='≥'+netThresh;
@@ -1186,7 +1172,7 @@ function buildToneCharts() {
 // ══════════════════════════════════
 
 function downloadData() {
-  const data = { metadata:{ total_articles:2618, bls_articles:1123, years:"2015-2025", topics:34, data_version:"2026-11-02" }, tone_by_year: Object.fromEntries(YEARS.map((y,i)=>([y,{affirming:TONE_AFF[i],skeptical:TONE_SK[i]}]))), topic_frequencies: Object.fromEntries(NET_NODES.map(n=>[n.id,{frequency:n.freq,bls_share_pct:n.bls,cluster:n.cluster}])), year_totals: Object.fromEntries(YEARS.map((y,i)=>([y,{total:TOTALS[i],bls:BLS_N[i],non_bls:TOTALS[i]-BLS_N[i],bls_share_pct:+(BLS_N[i]/TOTALS[i]*100).toFixed(1)}]))), period_averages:{"2015-2020":SHARE_PRE,"2021-2025":SHARE_POST}, topic_share_change: CHANGE_DATA };
+  const data = { metadata:{ total_articles:2618, bls_articles:1123, years:"2015-2025", topics:34, data_version:"2026-11-02" }, tone_by_year: Object.fromEntries(YEARS.map((y,i)=>([y,{affirming:TONE_AFF[i],skeptical:TONE_SK[i]}]))), topic_frequencies: Object.fromEntries(NET_DATA.all.nodes.map(n=>[n.id,{frequency:n.freq,bls_share_pct:n.bls,cluster:n.cluster}])), co_occurrence: {all:NET_DATA.all.edges, '2015-2020':NET_DATA.pre.edges, '2021-2025':NET_DATA.post.edges}, year_totals: Object.fromEntries(YEARS.map((y,i)=>([y,{total:TOTALS[i],bls:BLS_N[i],non_bls:TOTALS[i]-BLS_N[i],bls_share_pct:+(BLS_N[i]/TOTALS[i]*100).toFixed(1)}]))), period_averages:{"2015-2020":SHARE_PRE,"2021-2025":SHARE_POST}, topic_share_change: CHANGE_DATA };
   const blob = new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
   const a = document.createElement('a'); a.href=URL.createObjectURL(blob); a.download='bls-scientometric-data.json'; a.click();
 }
